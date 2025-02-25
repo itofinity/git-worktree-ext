@@ -6,6 +6,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <defaultnamespace>io.atlassianlabs.git.wt</defaultnamespace>
+    <AssemblyName>git-wt</AssemblyName>
     <!-- START Single File Publishing options -->
     <PublishSingleFile>true</PublishSingleFile>
     <SelfContained>true</SelfContained>
