@@ -16,13 +16,49 @@ Run the executable to display the latest help and options information:
 
 ### Installation
 
-TBC
+Either
+
+1. Place a copy of the `git-wt` executable in your PATH
+2. Run the installation option to add as a Git Alias, running from the current location of `git-wt` executable
+
+    wt install
+
+for example
+
+    Add alias wta to /Users/mminns/projects/bitbucket.org/mminns/git-worktree-ext/src/wt/bin/Debug/net9.0/osx-arm64/git-wt? [y/N]:y
+    Alias wta:/Users/mminns/projects/bitbucket.org/mminns/git-worktree-ext/src/wt/bin/Debug/net9.0/osx-arm64/git-wt added.
 
 ### Commands
 
 Run the git command to display the latest help and options information:
 
     > git wt 
+
+
+For example
+
+    Description:
+    Git Worktree Extension
+
+    Usage:
+    git-wt [command] [options]
+
+    Options:
+    --version       Show version information
+    -?, -h, --help  Show help and usage information
+
+    Commands:
+    open       Open a new of existing worktree
+    close      Close a worktree branch
+    home       Get the home worktree folder
+    list       List open worktrees
+    status     View the worktree status, configuration and active worktrees
+    set        [Config] Set the parent worktree path
+    unset      [Config] Unset the parent worktree path
+    install    [Config] Install Git-Wt
+    uninstall  [Config] Uninstall Git-Wt
+    new        [Plumbing] Create a new worktree branch
+    remove     [Plumbing] Remove a worktree branch
 
 
 # Development
@@ -102,3 +138,12 @@ NB. Due to the [dependency resolution issue](#Dependency-Resultion-Problems) whe
     Restore failed with 4 error(s) in 6.0s
 
 It can be resolved with the same [workaround](#Dependency-Resolution-Workaround)
+
+
+
+
+# Misc
+
+https://gitbetter.substack.com/p/automate-repetitive-tasks-with-custom 
+
+Clipboard code https://github.com/soheilpro/Clipboard 
