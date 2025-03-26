@@ -173,15 +173,23 @@ class Commands
         command.SetHandler(() =>
         {
             var alias = "wta";
-            var command = $"{Environment.ProcessPath} $*";
+            var path = Environment.ProcessPath;
+            if (path == null)
+            {
+                Console.WriteLine("ERROR: Process path not defined.");
+                return;
+            }
+            
+            path = path.Replace("\\", "/");
+            var command = $"{path} $*";
             // TODO validate destination
-            Console.Write($"Add alias {alias} to {Environment.ProcessPath}? [y/N]:");
+            Console.Write($"Add alias {alias} to {path}? [y/N]:");
             var response = Console.ReadKey();
             Console.WriteLine();
             if (response.Key == ConsoleKey.Y)
             {
-                Git.AddAlias(alias, $"{Environment.ProcessPath}");
-                Console.WriteLine($"Alias {alias}:{Environment.ProcessPath} added.");
+                Git.AddAlias(alias, $"{path}");
+                Console.WriteLine($"Alias {alias}:{path} added.");
             }
             else
             {
