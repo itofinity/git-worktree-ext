@@ -104,18 +104,25 @@ class Git {
 
 }
 
+record WorktreeRecord(string commit,
+             string branch,
+             string path)
+{
+}
+
 class Worktree
 {
-    internal List<Tuple<String, String>> List()
+    internal List<WorktreeRecord> List()
     {
         var response = CommandLine.Run(Git.GIT_EXE, "worktree list");
-        var worktrees = response.Split(Environment.NewLine)
+        var worktrees = response.Split("\n")
             .Where(l => !string.IsNullOrEmpty(l))
             .Select(l => {
-                var parts = l.Split(" ");
-                var path = parts[0];
-                var branch = parts[parts.Length - 1].Replace("[", "").Replace("]", "");
-                return new Tuple<string, string>(branch, path);
+                var parts = l.Split(" ").Where(p => !string.IsNullOrEmpty(p)).ToArray();
+                var path = parts[0].Trim();
+                var commit = parts[1].Trim();
+                var branch = parts[parts.Length - 1].Trim();
+                return new WorktreeRecord(commit, branch, path);
             })
             .ToList();
         return worktrees;

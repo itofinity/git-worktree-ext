@@ -100,10 +100,16 @@ class Commands
             // config
             Console.WriteLine(Git.GetGitWtConfig());
             // list
-            Git.Worktree.List().ForEach(w => Console.WriteLine(w));
-            
+            List();
+
         });
         return viewCommand;
+    }
+
+    private static void List()
+    {
+        var idx = 0;
+        Git.Worktree.List().ForEach(w => Console.WriteLine($"{idx++}: {w.commit} {w.branch} {w.path}"));
     }
 
     internal static Command BuildNewCommand()
@@ -179,7 +185,7 @@ class Commands
                 Console.WriteLine("ERROR: Process path not defined.");
                 return;
             }
-            
+
             path = path.Replace("\\", "/");
             var command = $"{path} $*";
             // TODO validate destination
@@ -233,10 +239,14 @@ class Commands
         var branchOption = new Option<string?>(
             name: "--branch",
             description: "The name of the worktree branch to open");
+        var indexOption = new Option<int?>(
+            aliases: new string[] { "--index", "-i" },
+            description: "The index of the worktree branch (from list) to open");
         command.AddOption(branchOption);
-        command.SetHandler((branch) =>
+        command.AddOption(indexOption);
+        command.SetHandler((branch, index) =>
         {
-            if (branch == null)
+            if (branch == null && index == null)
             {
                 Console.WriteLine("ERROR: Branch not defined.");
                 return;
@@ -244,11 +254,14 @@ class Commands
 
             // does the worktree already exist?
             var worktrees = Git.Worktree.List();
-            var existingWorktree = worktrees.Where(wt => wt.Item1 == branch).FirstOrDefault();
+            var existingWorktree = worktrees.Where((wt, idx) => 
+                (!string.IsNullOrEmpty(branch) && wt.branch.Contains(branch))
+                || idx == index)
+                .FirstOrDefault();
             if (existingWorktree != null)
             {
-                Console.WriteLine($"Found worktree {existingWorktree.Item1} at {existingWorktree.Item2}");
-                SendToClipboard(existingWorktree.Item2, $"Worktree path {existingWorktree.Item2} copied to clipboard.");
+                Console.WriteLine($"Found worktree {existingWorktree.branch} at {existingWorktree.path}");
+                SendToClipboard(existingWorktree.path, $"Worktree path {existingWorktree.path} copied to clipboard.");
                 return;
             }
 
@@ -267,12 +280,13 @@ class Commands
             var newWorktree = NewWorktreeNewBranchFlow(branch);
             SendToClipboard(newWorktree, $"Worktree path {newWorktree} copied to clipboard.");
 
-        }, branchOption);
+        }, branchOption, indexOption);
         return command;
     }
 
     private static void SendToClipboard(string value, string message)
     {
+        System.Console.WriteLine("Copying to clipboard: [" + value + "]");
         Clipboard.Clipboard.Default.SetText(value);
         Console.WriteLine(message);
     }
@@ -280,7 +294,7 @@ class Commands
     private static string NewWorktreeNewBranchFlow(string branch)
     {
         // TODO validate branch is really new
-        var destination = Path.Combine(Git.GetWtRoot(), branch.Trim());
+        var destination = Path.Combine(Git.GetWtRoot(), branch.Replace('/', Path.DirectorySeparatorChar).Trim());
         // TODO validate destination
         if (destination == null)
         {
@@ -364,8 +378,7 @@ class Commands
     private static Command BuildListCommand() {
         var command = new Command("list", "List open worktrees");
         command.SetHandler(() => {
-            var worktrees = Git.Worktree.List();
-            worktrees.ForEach(w => Console.WriteLine(w));
+            List();
         });
         return command;
     }
